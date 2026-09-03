@@ -6,14 +6,18 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include "Includes/Dobby/dobby.h"
 
 #define LOG_TAG "Mod_Menu"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
+// Khai báo trực tiếp DobbyHook để không cần include file dobby.h
+extern "C" {
+    int DobbyHook(void *function_address, void *replace_call, void **origin_call);
+}
+
 // ========================================================================
-// TỰ ĐỊNH NGHĨA HÀM TÌM ĐỊA CHỈ BỘ NHỚ (KHÔNG CẦN UTILS.H)
+// TỰ ĐỊNH NGHĨA HÀM TÌM ĐỊA CHỈ BỘ NHỚ
 // ========================================================================
 uintptr_t getAbsoluteAddress(const char* libraryName, uintptr_t relativeAddr) {
     FILE *fp = fopen("/proc/self/maps", "rt");
@@ -37,11 +41,11 @@ bool isLibraryLoaded(const char* libraryName) {
 }
 
 // ========================================================================
-// CẤU HÌNH DOBBY HOOK & HACK THREAD
+// CẤU HÌNH HOOK & HACK THREAD
 // ========================================================================
 const char *targetLib = "libminecraftpe.so";
 bool isBlockNativeCall = false;
-uintptr_t nativeCallOffset = 0xd3f05b4; // Offset MCPE của bạn
+uintptr_t nativeCallOffset = 0xd3f05b4; // Offset MCPE
 
 void* (*orig_NativeCall)(void* arg1, void* arg2, void* arg3) = nullptr;
 
@@ -73,7 +77,7 @@ void *hack_thread(void *) {
 }
 
 // ========================================================================
-// CÁC HÀM JNI XUẤT RA CHO JAVA (KHÔNG ĐƯỢC XÓA)
+// CÁC HÀM JNI XUẤT RA CHO JAVA
 // ========================================================================
 extern "C" {
 
