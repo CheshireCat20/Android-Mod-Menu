@@ -1,4 +1,4 @@
-name: Build Mod Menu APK
+name: Build Mod Menu
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -19,17 +19,23 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Gradle 8.13
-        uses: gradle/actions/setup-gradle@v3
+      - name: Setup Android NDK
+        uses: nshipman-io/setup-android-ndk@v1
         with:
-          gradle-version: '8.13'
+          ndk-version: r25c
 
-      - name: Build Debug APK
-        run: gradle assembleDebug --stacktrace
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-      - name: Upload APK Artifact
+      - name: Build with Gradle
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK & SO Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ModMenu-APK
-          path: app/build/outputs/apk/debug/*.apk
-          
+          name: ModMenu-Output
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/intermediates/cxx/Debug/*/obj/arm64-v8a/*.so
+            app/build/intermediates/stripped_native_libs/debug/out/lib/arm64-v8a/*.so
+            
