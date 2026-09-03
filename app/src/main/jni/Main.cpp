@@ -11,15 +11,15 @@
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-// Khai báo trực tiếp DobbyHook để không cần include file dobby.h
+// Khai báo DobbyHook
 extern "C" {
     int DobbyHook(void *function_address, void *replace_call, void **origin_call);
 }
 
 // ========================================================================
-// TỰ ĐỊNH NGHĨA HÀM TÌM ĐỊA CHỈ BỘ NHỚ
+// HÀM TIM ĐỊA CHỈ BỘ NHỚ (THÊM STATIC ĐỂ TRÁNH XUNG ĐỘT LINKER)
 // ========================================================================
-uintptr_t getAbsoluteAddress(const char* libraryName, uintptr_t relativeAddr) {
+static uintptr_t getAbsoluteAddress(const char* libraryName, uintptr_t relativeAddr) {
     FILE *fp = fopen("/proc/self/maps", "rt");
     if (!fp) return 0;
 
@@ -36,7 +36,7 @@ uintptr_t getAbsoluteAddress(const char* libraryName, uintptr_t relativeAddr) {
     return baseAddr + relativeAddr;
 }
 
-bool isLibraryLoaded(const char* libraryName) {
+static bool isLibraryLoaded(const char* libraryName) {
     return getAbsoluteAddress(libraryName, 0) != 0;
 }
 
