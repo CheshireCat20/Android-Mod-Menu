@@ -8,7 +8,7 @@
 #include <android/log.h>
 #include <cstdint>
 
-// Nhúng các header mặc định của LGL
+// Tự động nhúng các header từ template LGL
 #if __has_include("Includes/Logger.h")
     #include "Includes/Logger.h"
 #elif __has_include("Logger.h")
@@ -81,11 +81,9 @@ void *hack_thread(void *) {
 }
 
 // ---------------------------------------------------------------------------
-// ĐĂNG KÝ HÀM CHO LGL MOD MENU (SETUP.CPP SẼ GỌI CÁC HÀM NÀY)
+// ĐĂNG KÝ HÀM CHO LGL MOD MENU (Không dùng extern "C" ở đây)
 // ---------------------------------------------------------------------------
-extern "C" {
 
-// Hàm trả về danh sách tính năng trên Menu
 jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     const char *features[] = {
         "1_Toggle_Chặn Native Call JS",
@@ -100,7 +98,6 @@ jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     return ret;
 }
 
-// Hàm nhận phản hồi khi người dùng thao tác trên Menu
 void Changes(JNIEnv *env, jclass clazz, jobject context, int feature, jstring featureName, int value, long lng, jboolean boolean, jstring str) {
     switch (feature) {
         case 0:
@@ -113,5 +110,3 @@ void Changes(JNIEnv *env, jclass clazz, jobject context, int feature, jstring fe
             break;
     }
 }
-
-} // extern "C"
