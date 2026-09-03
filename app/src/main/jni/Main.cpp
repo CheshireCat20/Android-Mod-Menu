@@ -1,18 +1,29 @@
 #include <jni.h>
+#include <android/log.h>
+
+#define LOG_TAG "ModMenuTest"
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 
 jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
-    jclass stringClass = env->FindClass("java/lang/String");
+    LOGI("GetFeatureList");
 
-    jobjectArray features =
-        env->NewObjectArray(1, stringClass, nullptr);
+    jclass cls = env->FindClass("java/lang/String");
+    if (!cls) {
+        LOGI("FindClass failed");
+        return nullptr;
+    }
 
-    env->SetObjectArrayElement(
-        features,
-        0,
-        env->NewStringUTF("Toggle Test")
-    );
+    jobjectArray result = env->NewObjectArray(1, cls, nullptr);
+    if (!result) {
+        LOGI("NewObjectArray failed");
+        return nullptr;
+    }
 
-    return features;
+    jstring item = env->NewStringUTF("Test Toggle");
+    env->SetObjectArrayElement(result, 0, item);
+    env->DeleteLocalRef(item);
+
+    return result;
 }
 
 void Changes(
@@ -26,8 +37,6 @@ void Changes(
         jboolean boolean,
         jstring str) {
 
-    if (feature == 0) {
-        // Chỉ test menu trước
-        // Không hook/can thiệp Minecraft ở đây.
-    }
+    LOGI("Changes: feature=%d value=%d boolean=%d",
+         feature, value, boolean);
 }
