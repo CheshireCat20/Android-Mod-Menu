@@ -66,6 +66,9 @@ import static android.widget.RelativeLayout.ALIGN_PARENT_RIGHT;
 
 public class Menu {
     //********** Here you can easly change the menu appearance **********//
+    static {
+        System.loadLibrary("MyLibName"); // Nạp thư viện C++ (libMyLibName.so)
+    }
     public static final String TAG = "Mod_Menu"; //Tag for logcat
 
     int TEXT_COLOR = Color.parseColor("#82CAFD");
