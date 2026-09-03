@@ -8,7 +8,7 @@
 #include <android/log.h>
 #include <cstdint>
 
-// Tự động nhúng các header từ template LGL
+// Nhúng các header mặc định của LGL
 #if __has_include("Includes/Logger.h")
     #include "Includes/Logger.h"
 #elif __has_include("Logger.h")
@@ -58,7 +58,7 @@ void* hook_NativeCall(void* arg1, void* arg2, void* arg3) {
     return orig_NativeCall(arg1, arg2, arg3);
 }
 
-// Luồng khởi tạo Hook (Setup.cpp trong template sẽ tự động gọi luồng này)
+// Luồng khởi tạo Hook (Setup.cpp sẽ tự gọi luồng này)
 void *hack_thread(void *) {
     LOGI("Đang chờ thư viện %s...", targetLib);
 
@@ -81,12 +81,12 @@ void *hack_thread(void *) {
 }
 
 // ---------------------------------------------------------------------------
-// CHỨC NĂNG GIAO DIỆN LGL MOD MENU
+// ĐĂNG KÝ HÀM CHO LGL MOD MENU (SETUP.CPP SẼ GỌI CÁC HÀM NÀY)
 // ---------------------------------------------------------------------------
 extern "C" {
 
-JNIEXPORT jobjectArray JNICALL
-Java_com_android_support_Menu_getFeatures(JNIEnv *env, jobject thiz) {
+// Hàm trả về danh sách tính năng trên Menu
+jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     const char *features[] = {
         "1_Toggle_Chặn Native Call JS",
     };
@@ -100,8 +100,8 @@ Java_com_android_support_Menu_getFeatures(JNIEnv *env, jobject thiz) {
     return ret;
 }
 
-JNIEXPORT void JNICALL
-Java_com_android_support_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj, jint feature, jint value, jboolean boolean, jstring str) {
+// Hàm nhận phản hồi khi người dùng thao tác trên Menu
+void Changes(JNIEnv *env, jclass clazz, jobject context, int feature, jstring featureName, int value, long lng, jboolean boolean, jstring str) {
     switch (feature) {
         case 0:
             isBlockNativeCall = boolean;
