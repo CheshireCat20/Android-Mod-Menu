@@ -17,7 +17,7 @@ extern "C" {
 }
 
 // ========================================================================
-// HÀM TIM ĐỊA CHỈ BỘ NHỚ (THÊM STATIC ĐỂ TRÁNH XUNG ĐỘT LINKER)
+// HÀM TÌM ĐỊA CHỈ BỘ NHỚ
 // ========================================================================
 static uintptr_t getAbsoluteAddress(const char* libraryName, uintptr_t relativeAddr) {
     FILE *fp = fopen("/proc/self/maps", "rt");
@@ -77,7 +77,25 @@ void *hack_thread(void *) {
 }
 
 // ========================================================================
-// CÁC HÀM JNI XUẤT RA CHO JAVA
+// CÁC HÀM LIÊN KẾT C++ CHO SETUP.CPP (ĐẶT NGOÀI EXTERN "C")
+// ========================================================================
+jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
+    jclass stringClass = env->FindClass("java/lang/String");
+    jobjectArray features = env->NewObjectArray(1, stringClass, env->NewStringUTF(""));
+    env->SetObjectArrayElement(features, 0, env->NewStringUTF("Toggle_Chặn gọi Native"));
+    return features;
+}
+
+void Changes(JNIEnv *env, jclass clazz, jobject context, int feature, jstring featureName, int value, long lng, jboolean boolean, jstring str) {
+    if (feature == 0) {
+        isBlockNativeCall = boolean;
+        if (boolean) LOGI("Đã BẬT chặn NativeCall");
+        else LOGI("Đã TẮT chặn NativeCall");
+    }
+}
+
+// ========================================================================
+// CÁC HÀM JNI TĨNH XUẤT RA CHO JAVA
 // ========================================================================
 extern "C" {
 
@@ -94,13 +112,6 @@ JNIEXPORT jstring JNICALL Java_com_android_support_Menu_IconWebViewData(JNIEnv *
     return nullptr;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_com_android_support_Menu_GetFeatureList(JNIEnv *env, jobject thiz) {
-    jclass stringClass = env->FindClass("java/lang/String");
-    jobjectArray features = env->NewObjectArray(1, stringClass, env->NewStringUTF(""));
-    env->SetObjectArrayElement(features, 0, env->NewStringUTF("Toggle_Chặn gọi Native"));
-    return features;
-}
-
 JNIEXPORT jobjectArray JNICALL Java_com_android_support_Menu_SettingsList(JNIEnv *env, jobject thiz) {
     jclass stringClass = env->FindClass("java/lang/String");
     return env->NewObjectArray(0, stringClass, nullptr);
@@ -108,14 +119,6 @@ JNIEXPORT jobjectArray JNICALL Java_com_android_support_Menu_SettingsList(JNIEnv
 
 JNIEXPORT jboolean JNICALL Java_com_android_support_Menu_IsGameLibLoaded(JNIEnv *env, jobject thiz) {
     return isLibraryLoaded(targetLib) ? JNI_TRUE : JNI_FALSE;
-}
-
-JNIEXPORT void JNICALL Java_com_android_support_Preferences_Changes(JNIEnv *env, jclass clazz, jobject context, jint feature, jstring featureName, jint value, jlong lng, jboolean boolean, jstring str) {
-    if (feature == 0) {
-        isBlockNativeCall = boolean;
-        if (boolean) LOGI("Đã BẬT chặn NativeCall");
-        else LOGI("Đã TẮT chặn NativeCall");
-    }
 }
 
 } // end extern "C"
