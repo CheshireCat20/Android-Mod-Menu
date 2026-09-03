@@ -77,7 +77,7 @@ void *hack_thread(void *) {
 }
 
 // ========================================================================
-// CÁC HÀM LIÊN KẾT C++ CHO SETUP.CPP (ĐẶT NGOÀI EXTERN "C")
+// HÀM LIÊN KẾT C++ CHO SETUP.CPP (BẮT BUỘC ĐẶT NGOÀI EXTERN "C")
 // ========================================================================
 jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     jclass stringClass = env->FindClass("java/lang/String");
@@ -86,7 +86,7 @@ jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     return features;
 }
 
-void Changes(JNIEnv *env, jclass clazz, jobject context, int feature, jstring featureName, int value, long lng, jboolean boolean, jstring str) {
+void Changes(JNIEnv *env, jclass clazz, jobject context, int feature, jstring featureName, int value, jlong lng, jboolean boolean, jstring str) {
     if (feature == 0) {
         isBlockNativeCall = boolean;
         if (boolean) LOGI("Đã BẬT chặn NativeCall");
@@ -95,7 +95,7 @@ void Changes(JNIEnv *env, jclass clazz, jobject context, int feature, jstring fe
 }
 
 // ========================================================================
-// CÁC HÀM JNI TĨNH XUẤT RA CHO JAVA
+// CÁC HÀM JNI XUẤT RA CHO JAVA
 // ========================================================================
 extern "C" {
 
